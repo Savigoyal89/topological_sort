@@ -1,2 +1,2 @@
 make
-./kahn.o
+./kahn.o parallel

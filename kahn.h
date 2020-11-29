@@ -8,7 +8,6 @@
 #include "graph.h"
 #include "vector.h"
 #include "file.h"
-#include "queue.h"
 #include <pthread.h>
 #include <stdbool.h>
 

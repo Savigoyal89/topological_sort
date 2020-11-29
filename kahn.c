@@ -1,5 +1,6 @@
 #include "kahn.h"
 #include <time.h>
+#include <string.h>
 
 #define MAXTHREADS 100
 pthread_mutex_t mutex_unprocessed_queue;
@@ -152,7 +153,7 @@ int topological_sort(vector *nodes, int num_nodes, bool process_parallel) {
 }
 
 
-int main() {
+int main(int argc, char *argv[]) {
     int source[10];
     int destination[10];
     int num_nodes = 0;
@@ -162,14 +163,20 @@ int main() {
     vector nodes;
     vector_init(&nodes);
     init_graph(&nodes, num_nodes, num_edges, source, destination);
-
+    bool process_parallel = false;
+    if ((argc >= 2) && (strcmp(argv[1],"parallel"))==0) {
+        printf("Processing the topological sort in parallel\n");
+        process_parallel = true;
+    } else {
+        printf("Processing the topological sort serially\n");
+    }
     pthread_mutex_init(&mutex_unprocessed_queue, NULL);
     pthread_mutex_init(&mutex_output_list, NULL);
     clock_t begin = clock();
-    topological_sort(&nodes, num_nodes, false);
+    topological_sort(&nodes, num_nodes, process_parallel);
     clock_t end = clock();
-    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("Time taken to perform topological sort: %f secs\n",time_spent);
+    double time_spent = (double) (end - begin) / CLOCKS_PER_SEC;
+    printf("Time taken to perform topological sort: %f secs\n", time_spent);
     pthread_mutex_destroy(&mutex_unprocessed_queue);
     pthread_mutex_destroy(&mutex_output_list);
     return 0;
