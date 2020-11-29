@@ -10,8 +10,9 @@
 #include "file.h"
 #include "queue.h"
 #include <pthread.h>
+#include <stdbool.h>
 
-int topological_sort(int , int , int* , int* );
+int topological_sort(vector *, int, bool);
 
 #endif //KAHN_KAHN_H
 
