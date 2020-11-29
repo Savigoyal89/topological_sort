@@ -13,11 +13,7 @@ node_p createNode(int ID) {
 }
 
 void printNode(node_p node) {
-    printf("ID: %d, Degree: %d, Processed: %d, Vertices: ", node->ID, node->Degree, node->Processed);
-    for (int i = 0; i < vector_count(&node->Vertices); i++) {
-        printf("%d ", ((node_p)vector_get(&node->Vertices, i))->ID);
-    }
-    printf("\n");
+    printf("ID: %d\n", node->ID);
 }
 
 void addEdge(node_t *src, node_t *dst) {
@@ -32,7 +28,6 @@ void removeEdge(node_p src, node_t *dst) {
         if (((node_p)vector_get(&src->Vertices, i))->ID == dst->ID) {
             dst->Degree--;
             vector_delete(&src->Vertices, i);
-            vector_reinit(&src->Vertices);
             break;
         }
     }

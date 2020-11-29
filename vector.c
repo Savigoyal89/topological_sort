@@ -29,14 +29,6 @@ void vector_add(vector *v, void *e) {
     v->count++;
 }
 
-void vector_set(vector *v, int index, void *e) {
-    if (index >= v->count) {
-        return;
-    }
-
-    v->data[index] = e;
-}
-
 void *vector_get(vector *v, int index) {
     if (index >= v->count) {
         return 0;
@@ -63,8 +55,4 @@ void vector_reinit(vector* v){
     free(v->data);
     v->data = newarr;
     v->count--;
-}
-
-void vector_free(vector *v) {
-    free(v->data);
 }
