@@ -6,7 +6,6 @@
 #define KAHN_KAHN_H
 
 #include "graph.h"
-//#include "queue.h"
 #include "vector.h"
 #include "file.h"
 #include <pthread.h>
