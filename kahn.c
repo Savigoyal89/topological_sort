@@ -1,4 +1,5 @@
 #include "kahn.h"
+#include <time.h>
 
 #define MAXTHREADS 100
 pthread_mutex_t mutex_unprocessed_queue;
@@ -18,7 +19,7 @@ void init_graph(vector *nodes, int num_nodes, int num_edges, int *source, int *d
     }
 }
 
-/** Thread safety needed for parallel processing. */
+/** Run serially on the main thread. */
 void fill_queue(vector *input_nodes, vector *unprocessed_nodes) {
     // Fill unprocessed_nodes with the nodes without incoming edges
     for (int i = 0; i < vector_count(input_nodes); i++) {
@@ -30,7 +31,7 @@ void fill_queue(vector *input_nodes, vector *unprocessed_nodes) {
     }
 }
 
-/** Thread safety needed for parallel processing. */
+/** Run serially on the main thread. */
 void process_nodes_serial(vector *unprocessed_nodes, vector *output) {
     printf("Processing the nodes serially\n");
     for (int unprocessed_node_index = 0;
@@ -61,6 +62,7 @@ struct args {
     int index;
 };
 
+/** Thread safety needed for parallel processing. This is done by using mutexes for output queue and unprocessed queue.*/
 void *process_node_parallel(void *input) {
     vector *unprocessed_nodes = ((struct args *) input)->unprocessed_nodes;
     vector *output = ((struct args *) input)->output;
@@ -70,9 +72,9 @@ void *process_node_parallel(void *input) {
     vector_delete(unprocessed_nodes, index);
     // Add node to the output
     printf("Adding node %d to the output list\n", next_node->ID);
-    pthread_mutex_lock (&mutex_output_list);
+    pthread_mutex_lock(&mutex_output_list);
     vector_add(output, next_node);
-    pthread_mutex_unlock (&mutex_output_list);
+    pthread_mutex_unlock(&mutex_output_list);
     // For each node m with an edge e from n
     for (int neighbor_index = 0; neighbor_index < vector_count(&next_node->Vertices); neighbor_index++) {
         node_p m = ((node_p) vector_get(&next_node->Vertices, neighbor_index));
@@ -81,16 +83,16 @@ void *process_node_parallel(void *input) {
         // If m has no other incoming edges insert m into unprocessed_nodes
         if (m->Degree == 0) {
             m->Processed = 1;
-            pthread_mutex_lock (&mutex_unprocessed_queue);
+            pthread_mutex_lock(&mutex_unprocessed_queue);
             printf("Adding node %d to the unprocessed queue\n", m->ID);
             vector_add(unprocessed_nodes, m);
-            pthread_mutex_unlock (&mutex_unprocessed_queue);
+            pthread_mutex_unlock(&mutex_unprocessed_queue);
         }
     }
     return 0;
 }
 
-/** Thread safety needed for parallel processing. */
+/** Runs a new thread for each unprocessed node.*/
 void process_nodes_parallel(vector *unprocessed_nodes, vector *output, int iteration) {
     printf("Processing the nodes in parallel for iteration: %d\n", iteration);
     pthread_t *thread_handles;
@@ -110,9 +112,10 @@ void process_nodes_parallel(vector *unprocessed_nodes, vector *output, int itera
     }
     free(thread_handles);
     vector_reinit(unprocessed_nodes);
-    if (vector_count(unprocessed_nodes) > 0) process_nodes_parallel(unprocessed_nodes, output, iteration+1);
+    if (vector_count(unprocessed_nodes) > 0) process_nodes_parallel(unprocessed_nodes, output, iteration + 1);
 }
 
+/** Sort the input nodes based on their dependency relationship.*/
 int topological_sort(vector *nodes, int num_nodes, bool process_parallel) {
     // Run the Kahn algorithm
     // Empty list that will contain the sorted elements
@@ -129,7 +132,7 @@ int topological_sort(vector *nodes, int num_nodes, bool process_parallel) {
 
     // Process the unprocessed nodes in the queue
     if (process_parallel) {
-        process_nodes_parallel(&unprocessed_nodes, &sorted_nodes,1);
+        process_nodes_parallel(&unprocessed_nodes, &sorted_nodes, 1);
     } else {
         process_nodes_serial(&unprocessed_nodes, &sorted_nodes);
     }
@@ -160,10 +163,13 @@ int main() {
     vector_init(&nodes);
     init_graph(&nodes, num_nodes, num_edges, source, destination);
 
-    bool process_parallel = true;
     pthread_mutex_init(&mutex_unprocessed_queue, NULL);
     pthread_mutex_init(&mutex_output_list, NULL);
-    topological_sort(&nodes, num_nodes, process_parallel);
+    clock_t begin = clock();
+    topological_sort(&nodes, num_nodes, false);
+    clock_t end = clock();
+    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("Time taken to perform topological sort: %f secs\n",time_spent);
     pthread_mutex_destroy(&mutex_unprocessed_queue);
     pthread_mutex_destroy(&mutex_output_list);
     return 0;
