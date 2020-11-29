@@ -54,5 +54,5 @@ void vector_reinit(vector* v){
     }
     free(v->data);
     v->data = newarr;
-    v->count--;
+    v->count = j;
 }
