@@ -154,8 +154,8 @@ int topological_sort(vector *nodes, int num_nodes, bool process_parallel) {
 
 
 int main(int argc, char *argv[]) {
-    int source[10];
-    int destination[10];
+    int source[10000];
+    int destination[10000];
     int num_nodes = 0;
     int num_edges = parse_input_file(&num_nodes, source, destination);
     printf("Number of nodes: %d\n", num_nodes);
