@@ -12,9 +12,9 @@ int get_num_nodes(FILE *fp){
 
 int parse_input_file(int* num_nodes, int* source , int* destination) {
     FILE *fp;
-    fp = fopen("/Users/savigoyal/CLionProjects/Kahn/graph.txt", "r");
+    fp = fopen("graph.txt", "r");
     if (fp == NULL){
-        printf("Could not open file %s", "graph.txt");
+        printf("Could not open file %s\n", "graph.txt");
         return 0;
     }
     *num_nodes = get_num_nodes(fp);
