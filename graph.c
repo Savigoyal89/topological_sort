@@ -32,6 +32,7 @@ void removeEdge(node_p src, node_t *dst) {
         if (((node_p)vector_get(&src->Vertices, i))->ID == dst->ID) {
             dst->Degree--;
             vector_delete(&src->Vertices, i);
+            vector_reinit(&src->Vertices);
             break;
         }
     }
