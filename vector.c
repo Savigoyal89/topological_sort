@@ -48,9 +48,10 @@ void vector_delete(vector *v, int index) {
     if (index >= v->count) {
         return;
     }
-
     v->data[index] = NULL;
+}
 
+void vector_reinit(vector* v){
     int i, j;
     void **newarr = (void **)malloc(sizeof(void *) * v->count * 2);
     for (i = 0, j = 0; i < v->count; i++) {
@@ -59,9 +60,7 @@ void vector_delete(vector *v, int index) {
             j++;
         }
     }
-
     free(v->data);
-
     v->data = newarr;
     v->count--;
 }
@@ -69,32 +68,3 @@ void vector_delete(vector *v, int index) {
 void vector_free(vector *v) {
     free(v->data);
 }
-
-// int main(void) {
-// 	vector v;
-// 	vector_init(&v);
-
-// 	vector_add(&v, "emil");
-// 	vector_add(&v, "hannes");
-// 	vector_add(&v, "lydia");
-// 	vector_add(&v, "olle");
-// 	vector_add(&v, "erik");
-
-// 	int i;
-// 	printf("first round:\n");
-// 	for (i = 0; i < vector_count(&v); i++) {
-// 		printf("%s\n", vector_get(&v, i));
-// 	}
-
-// 	vector_delete(&v, 1);
-// 	vector_delete(&v, 3);
-
-// 	printf("second round:\n");
-// 	for (i = 0; i < vector_count(&v); i++) {
-// 		printf("%s\n", vector_get(&v, i));
-// 	}
-
-// 	vector_free(&v);
-
-// 	return 0;
-// }

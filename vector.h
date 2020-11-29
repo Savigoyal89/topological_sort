@@ -21,6 +21,7 @@ void vector_add(vector *, void *);
 void vector_set(vector *, int, void *);
 void *vector_get(vector *, int);
 void vector_delete(vector *, int);
+void vector_reinit(vector* v);
 void vector_free(vector *);
 
 

@@ -8,6 +8,7 @@
 #include "graph.h"
 #include "vector.h"
 #include "file.h"
+#include "queue.h"
 #include <pthread.h>
 
 int topological_sort(int , int , int* , int* );
