@@ -25,7 +25,8 @@ void addEdge(node_t *src, node_t *dst) {
 // Remove from src the vertex with ID = dst->ID;
 void removeEdge(node_p src, node_t *dst) {
     for (int i = 0; i < vector_count(&src->Vertices); i++) {
-        if (((node_p)vector_get(&src->Vertices, i))->ID == dst->ID) {
+        node_p other_node = (node_p)vector_get(&src->Vertices, i);
+        if (other_node != NULL && (other_node->ID == dst->ID)) {
             dst->Degree--;
             vector_delete(&src->Vertices, i);
             break;
